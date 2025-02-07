@@ -34,12 +34,15 @@ func CreateOrOpen(path string, file string) (*database.Database, error) {
 		defer fl.Close()
 		fmt.Printf("[<==] Successfully created file %q\n", path+file)
 
-		db := database.NewDatabase(database.LatestConfig())
+		db := database.NewDatabase()
 
 		// Return the database and encode it in the file
 		return db, encodeDatabase(fl, db)
 	}
-	defer fl.Close()
+	defer func() {
+		fmt.Printf("[CLOSING FILE] %q\n", path+file)
+		fl.Close()
+	}()
 
 	return decodeDatabase(fl)
 }

@@ -1,35 +1,48 @@
 package noite_test
 
 import (
-	"errors"
-	"io/fs"
 	"os"
 	"testing"
 
 	"github.com/BambooRaptor/go-noite/noite"
+	"github.com/BambooRaptor/go-noite/pkgs/database"
 )
 
+const path = "../tmp/db/"
+const file = "test.noite"
+
+func cleanTempFile(path string, file string) {
+	_ = os.Remove(path + file)
+}
+
+func cleanTemp() {
+	cleanTempFile(path, file)
+}
+
 func TestDatabaseFileCreation(t *testing.T) {
-	path := "../tmp/db/"
-	file := "test.noite"
+	cleanTemp()
 
-	// Clean the tmp file for testing
-	if err := os.Remove(path + file); !errors.Is(err, fs.ErrNotExist) {
-		t.Fatalf("Error removing tmp database %q.\n> %v\n", path, err)
-	}
-
-	// Should create
+	// Should create a new database file
 	t.Run("create new database file", func(t *testing.T) {
-		_, err := noite.CreateOrOpen(path, file)
-		if err != nil {
-			t.Fatalf("[TEST ERROR] Error creating Database %q.\n> %v\n", path, err)
-		}
+		createOrOpen(t, path, file)
 	})
 
+	// Should open the created database file
 	t.Run("open existing database file", func(t *testing.T) {
-		_, err := noite.CreateOrOpen(path, file)
-		if err != nil {
-			t.Fatalf("[TEST ERROR] Error opening Database %q.\n> %v\n", path, err)
-		}
+		createOrOpen(t, path, file)
 	})
+}
+
+func createOrOpen(t *testing.T, path string, file string) *database.Database {
+	db, err := noite.CreateOrOpen(path, file)
+	if err != nil {
+		t.Fatalf("[TEST ERROR] Error creating Database %q.\n> %v\n", path, err)
+	}
+	return db
+}
+
+func TestDatabaseCollections(t *testing.T) {
+	cleanTemp()
+	db := createOrOpen(t, path, file)
+	db.Collection("hello")
 }

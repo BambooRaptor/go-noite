@@ -1,6 +1,12 @@
 package codec
 
-import "github.com/BambooRaptor/go-noite/pkgs/database"
+import (
+	"fmt"
+
+	"github.com/BambooRaptor/go-noite/pkgs/database"
+)
+
+const LATEST_ENCODING_SCHEMA uint64 = 0
 
 type DatabaseEncoder interface {
 	Encode(*database.Database) error
@@ -8,4 +14,10 @@ type DatabaseEncoder interface {
 
 type DatabaseDecoder interface {
 	Decode() (*database.Database, error)
+}
+
+type EncodingSchema uint16
+
+func (es EncodingSchema) Version() string {
+	return fmt.Sprintf("v%d", es)
 }
