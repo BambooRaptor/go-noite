@@ -14,7 +14,7 @@ type Writer struct {
 
 func NewWriter(db *database.Database) *Writer {
 	return &Writer{
-		version: new(Ui16).New(7),
+		version: new(Ui16).New(0),
 		header:  MakeString("all your noite are belong to us."),
 		collections: new(List[collection]).New(
 			collection{
